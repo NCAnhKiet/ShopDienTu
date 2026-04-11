@@ -15,5 +15,4 @@ public partial class User
 
     public int Role { get; set; }
 
-    ///Gửi email xác thực
 }

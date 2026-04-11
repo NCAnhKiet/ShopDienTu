@@ -12,5 +12,4 @@ public partial class Category
 
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 
-    //loại sản phẩm
 }
