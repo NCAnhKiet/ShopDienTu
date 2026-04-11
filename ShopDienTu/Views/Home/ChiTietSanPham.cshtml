@@ -1,0 +1,251 @@
+@model ShopDienTu.MoDels.Product
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = Model.ProductName;
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+
+    var imgSrc = string.IsNullOrEmpty(Model.ImageUrl) ? "" 
+        : (Model.ImageUrl.StartsWith("/") ? Model.ImageUrl : Url.Content("~/ProductsImages/" + Model.ImageUrl));
+}
+
+<div class="bg-white rounded-4 shadow-sm p-4 p-md-5 mb-4">
+    <div class="row gx-5">
+        
+        <!-- Ảnh rải -->
+        <div class="col-lg-5 mb-4 mb-lg-0">
+            <div class="bg-light rounded-4 d-flex align-items-center justify-content-center p-4 mb-3" style="min-height: 380px;">
+                @if (!string.IsNullOrEmpty(imgSrc))
+                {
+                    <img src="@imgSrc" class="img-fluid" style="max-height: 320px; object-fit: contain;" alt="@Model.ProductName" onerror="this.style.display='none'">
+                }
+                else
+                {
+                    <i class="bi bi-image text-muted" style="font-size: 5rem; opacity: 0.3;"></i>
+                }
+            </div>
+            
+            @if (!string.IsNullOrEmpty(imgSrc)) 
+            {
+                <div class="d-flex gap-2 justify-content-center">
+                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center border" style="width: 70px; height: 70px; border-color: var(--accent) !important;">
+                        <img src="@imgSrc" class="img-fluid p-1" style="max-height: 60px; object-fit: contain;">
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Chi tiết -->
+        <div class="col-lg-7 d-flex flex-column justify-content-center">
+            
+            <span class="badge text-bg-light border text-muted mb-3 rounded-pill px-3" style="width: max-content; font-size: 0.75rem; font-weight: 600;">
+                <i class="bi bi-tag-fill me-1"></i> ID: @Model.ProductId
+            </span>
+
+            <h2 class="fw-black mb-3" style="color: var(--text-main); font-weight: 900; letter-spacing: -0.5px;">@Model.ProductName</h2>
+            
+            <div class="d-flex gap-3 align-items-center mb-4 pb-3 border-bottom">
+                <h3 class="fw-bolder m-0" style="color: var(--accent);">@String.Format("{0:N0} ₫", Model.Price)</h3>
+                <span class="badge text-bg-success rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> Còn hàng</span>
+                <span class="text-muted ms-auto" style="font-size: 0.9rem; font-weight: 600;">Đã bán: @Model.SoldCount</span>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-muted" style="font-size: 0.95rem; line-height: 1.6;">@(string.IsNullOrEmpty(Model.Description) ? "Sản phẩm chính hãng với bảo hành đầy đủ. Hãy liên hệ với chúng tôi để biết thêm các chi tiết khuyến mãi hấp dẫn nhất." : Model.Description)</p>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <div class="text-muted mb-1" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Màu sắc</div>
+                        <div class="fw-bold text-dark"><i class="bi bi-palette-fill me-2" style="color: var(--accent);"></i> @Model.Color</div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <div class="text-muted mb-1" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Kích cỡ</div>
+                        <div class="fw-bold text-dark"><i class="bi bi-rulers me-2" style="color: var(--accent);"></i> @(string.IsNullOrEmpty(Model.Size) ? "Mặc định" : Model.Size)</div>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-controller="Cart" asp-action="Add" method="post" class="mt-auto pt-2">
+                <input type="hidden" name="id" value="@Model.ProductId" />
+                <div class="d-flex gap-3 align-items-center">
+                    
+                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-between px-2" style="width: 120px; height: 50px; border: 1px solid var(--border);">
+                        <button type="button" class="btn btn-sm btn-link text-dark text-decoration-none p-0" onclick="updateQty(-1)"><i class="bi bi-dash"></i></button>
+                        <input type="text" id="quantityInput" name="quantity" class="form-control border-0 bg-transparent text-center px-0 fw-bold shadow-none" value="1" style="width: 40px;" readonly>
+                        <button type="button" class="btn btn-sm btn-link text-dark text-decoration-none p-0" onclick="updateQty(1)"><i class="bi bi-plus"></i></button>
+                    </div>
+
+                    <button type="submit" class="btn flex-grow-1 d-flex justify-content-center align-items-center gap-2 text-white fw-bold shadow" style="background: var(--accent); height: 50px; border-radius: 8px; transition: 0.2s;" onmouseover="this.style.background='var(--accent-hover)'" onmouseout="this.style.background='var(--accent)'">
+                        <i class="bi bi-cart-plus-fill"></i> THÊM VÀO GIỎ
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Phần Đánh giá & Bình luận -->
+<div class="bg-white rounded-4 shadow-sm p-4 p-md-5 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h4 class="fw-bold m-0" style="color: var(--text-main);">Đánh giá & Bình luận</h4>
+        
+        @{
+            var reviews = Model.ProductReviews?.OrderByDescending(r => r.CreatedAt).ToList() ?? new List<ShopDienTu.MoDels.ProductReview>();
+            int totalReviews = reviews.Count;
+            double avgRating = totalReviews > 0 ? Math.Round(reviews.Average(r => r.Rating), 1) : 0;
+        }
+        
+        <div class="fw-bold fs-5 text-warning">
+            @(avgRating > 0 ? avgRating.ToString("0.0") : "Chưa có")/5 <i class="bi bi-star-fill"></i>
+            <span class="text-muted fs-6 fw-normal ms-1">(@totalReviews đánh giá)</span>
+        </div>
+    </div>
+    
+    @if (Context.Session.GetString("Email") != null)
+    {
+        int canReviewCount = ViewBag.CanReviewCount ?? 0;
+        
+        if (canReviewCount > 0)
+        {
+            <form asp-controller="Home" asp-action="SubmitReview" method="post">
+                <input type="hidden" name="productId" value="@Model.ProductId" />
+                <div class="d-flex gap-3 mb-5">
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #64748b; flex-shrink: 0;">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <textarea name="content" class="form-control bg-light border-0 shadow-none mb-2" rows="3" placeholder="Gần đây bạn đã mua sản phẩm này. Hãy chia sẻ đánh giá của mình nhé!" style="border-radius: 12px; padding: 15px;" required></textarea>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="rating-stars text-warning fs-5" style="cursor: pointer;">
+                                <input type="hidden" name="rating" id="reviewRating" value="5" />
+                                <i class="bi bi-star-fill star-item" data-val="1"></i>
+                                <i class="bi bi-star-fill star-item" data-val="2"></i>
+                                <i class="bi bi-star-fill star-item" data-val="3"></i>
+                                <i class="bi bi-star-fill star-item" data-val="4"></i>
+                                <i class="bi bi-star-fill star-item" data-val="5"></i>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="text-muted" style="font-size: 0.8rem;">Bạn còn @canReviewCount lượt đánh giá</span>
+                                <button type="submit" class="btn text-white fw-bold px-4" style="background: var(--accent); border-radius: 8px;">Gửi đánh giá</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-light border text-center mb-5 border-0 rounded-4" style="background: #f8fafc;">
+                <i class="bi bi-clock-history text-muted mb-2 d-block fs-3"></i>
+                <div class="fw-bold text-dark">Bạn chưa thể đánh giá hoặc đã hết hạn</div>
+                <div class="text-muted mt-2" style="font-size: 0.9rem;">
+                    Bạn cần mua sản phẩm này <b>(được tính theo từng lần mua)</b> để có thể đánh giá.<br /> 
+                    <i>*Lưu ý: Bạn có <b>7 ngày (1 tuần)</b> kể từ thời điểm đặt hàng để trải nghiệm và để lại đánh giá cho mỗi lần mua.*</i>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-light border text-center mb-5 border-0 bg-light rounded-4">
+            Vui lòng <a asp-controller="Access" asp-action="Login" class="fw-bold text-decoration-none" style="color: var(--accent)">đăng nhập</a> để gửi đánh giá của bạn.
+        </div>
+    }
+
+    <!-- Danh sách bình luận -->
+    <div class="mt-4">
+        @if (!reviews.Any())
+        {
+            <div class="text-center py-4 text-muted">Chưa có đánh giá nào cho sản phẩm này.</div>
+        }
+        else
+        {
+            @foreach(var rv in reviews)
+            {
+                <div class="d-flex gap-3 mb-4 pb-4 border-bottom">
+                    <div style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #0b8281); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0;">
+                        @(string.IsNullOrEmpty(rv.Customer?.FullName) ? "U" : rv.Customer.FullName.Substring(0, 1).ToUpper())
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fw-bold" style="color: var(--text-main);">@(rv.Customer?.FullName ?? "Khách hàng")</span>
+                                <span class="text-muted" style="font-size: 0.8rem;">• @rv.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                                <span class="badge" style="background-color: #22c55e20; color: #16a34a; font-size: 0.7rem; margin-left: 4px;">
+                                    <i class="bi bi-bag-check-fill"></i> Đã mua hàng
+                                </span>
+                            </div>
+                            
+                            <!-- Thu hồi button -->
+                            @{
+                                int currentUserId = ViewBag.CurrentCustomerId ?? 0;
+                                bool isMyReview = (rv.CustomerId == currentUserId);
+                                bool within8Hours = (DateTime.Now - rv.CreatedAt).TotalHours <= 8;
+                            }
+                            @if (isMyReview && within8Hours)
+                            {
+                                <form asp-controller="Home" asp-action="DeleteReview" method="post" onsubmit="return confirm('Bạn có chắc muốn thu hồi đánh giá này? thao tác này không thể hoàn tác.')">
+                                    <input type="hidden" name="reviewId" value="@rv.ReviewId" />
+                                    <button type="submit" class="btn btn-sm text-danger border-0 bg-transparent p-0" title="Thu hồi bình luận">
+                                        <i class="bi bi-trash3-fill"></i> Thu hồi
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                        
+                        <div class="text-warning mb-2" style="font-size: 0.85rem;">
+                            @for(int i=1; i<=5; i++)
+                            {
+                                if(i <= rv.Rating)
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                            }
+                        </div>
+                        <p class="text-muted mb-0" style="font-size: 0.95rem; line-height: 1.6;">@rv.Content</p>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateQty(change) {
+            let input = document.getElementById('quantityInput');
+            let current = parseInt(input.value) || 1;
+            let newVal = current + change;
+            if(newVal >= 1) {
+                input.value = newVal;
+            }
+        }
+
+        // Star rating logic
+        document.querySelectorAll('.star-item').forEach(item => {
+            item.addEventListener('click', function() {
+                let rating = this.getAttribute('data-val');
+                document.getElementById('reviewRating').value = rating;
+                
+                document.querySelectorAll('.star-item').forEach(star => {
+                    if(star.getAttribute('data-val') <= rating) {
+                        star.classList.remove('bi-star');
+                        star.classList.add('bi-star-fill');
+                    } else {
+                        star.classList.remove('bi-star-fill');
+                        star.classList.add('bi-star');
+                    }
+                });
+            });
+        });
+    </script>
+}

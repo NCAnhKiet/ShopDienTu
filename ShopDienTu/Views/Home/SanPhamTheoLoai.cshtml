@@ -1,0 +1,28 @@
+@model List<ShopDienTu.MoDels.Product>
+
+@{
+    ViewData["Title"] = "Tìm theo danh mục";
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+}
+
+<div class="mb-4">
+    <h3 class="fw-bold m-0" style="color: var(--text-main);">SẢN PHẨM THEO DANH MỤC</h3>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-secondary border-0 bg-white shadow-sm rounded-3">
+        <i class="bi bi-info-circle-fill text-muted me-2"></i> Không có sản phẩm nào trong danh mục này.
+    </div>
+}
+else
+{
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                @await Html.PartialAsync("PartialSanPham", item)
+            </div>
+        }
+    </div>
+}

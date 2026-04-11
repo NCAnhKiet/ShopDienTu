@@ -1,0 +1,179 @@
+@{
+    ViewData["Title"] = "Dashboard Thống Kê";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="row">
+    <!-- Revenue -->
+    <div class="col-md-3 stretch-card grid-margin">
+        <div class="card bg-gradient-info card-img-holder text-white" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white !important; color: #333 !important;">
+            <div class="card-body p-4">
+                <h4 class="font-weight-normal mb-3 text-muted">Tổng doanh thu
+                    <i class="mdi mdi-cash-multiple float-right" style="color: #a48df6; font-size: 24px; padding: 10px; background: #f3f0ff; border-radius: 10px;"></i>
+                </h4>
+                <h2 class="mb-5 font-weight-bold">@String.Format("{0:N0} đ", ViewBag.AllTimeRevenue)</h2>
+                <h6 class="card-text text-success"><i class="mdi mdi-trending-up"></i> Hôm nay: @String.Format("{0:N0} đ", ViewBag.TodayRevenue)</h6>
+            </div>
+        </div>
+    </div>
+    <!-- Orders -->
+    <div class="col-md-3 stretch-card grid-margin">
+        <div class="card card-img-holder" style="border-radius: 12px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div class="card-body p-4">
+                <h4 class="font-weight-normal mb-3 text-muted">Cần xử lý
+                    <i class="mdi mdi-shopping float-right" style="color: #6da5ff; font-size: 24px; padding: 10px; background: #eef5ff; border-radius: 10px;"></i>
+                </h4>
+                <h2 class="mb-5 font-weight-bold">@ViewBag.PendingOrders <span style="font-size: 16px; font-weight: normal; color: #999;">/ @ViewBag.TotalOrders</span></h2>
+                <h6 class="card-text text-warning">Cập nhật liên tục</h6>
+            </div>
+        </div>
+    </div>
+    <!-- Products -->
+    <div class="col-md-3 stretch-card grid-margin">
+        <div class="card card-img-holder" style="border-radius: 12px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div class="card-body p-4">
+                <h4 class="font-weight-normal mb-3 text-muted">Sản phẩm
+                    <i class="mdi mdi-cube-outline float-right" style="color: #2bd48f; font-size: 24px; padding: 10px; background: #eafbf4; border-radius: 10px;"></i>
+                </h4>
+                <h2 class="mb-5 font-weight-bold">@ViewBag.TotalProducts</h2>
+                <h6 class="card-text text-muted">Đang kinh doanh</h6>
+            </div>
+        </div>
+    </div>
+    <!-- Customers -->
+    <div class="col-md-3 stretch-card grid-margin">
+        <div class="card card-img-holder" style="border-radius: 12px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div class="card-body p-4">
+                <h4 class="font-weight-normal mb-3 text-muted">Khách hàng
+                    <i class="mdi mdi-account-multiple float-right" style="color: #ff9871; font-size: 24px; padding: 10px; background: #fff4f1; border-radius: 10px;"></i>
+                </h4>
+                <h2 class="mb-5 font-weight-bold">@ViewBag.TotalCustomers</h2>
+                <h6 class="card-text text-success"><i class="mdi mdi-arrow-top-right"></i> Thành viên</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-7 grid-margin stretch-card">
+        <div class="card" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div class="card-body">
+                <div class="clearfix">
+                    <h4 class="card-title float-left font-weight-bold">Doanh thu</h4>
+                </div>
+                <p class="text-muted">Thống kê theo 30 ngày gần nhất</p>
+                <div style="position: relative; height:300px; width:100%">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5 grid-margin stretch-card">
+        <div class="card" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div class="card-body">
+                <h4 class="card-title font-weight-bold">Lượng đơn hàng</h4>
+                <p class="text-muted">Xu hướng 30 ngày gần nhất</p>
+                <div style="position: relative; height:300px; width:100%">
+                    <canvas id="orderChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPTS FOR CHARTS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // --- REVENUE CHART ---
+        var rvDates = @Html.Raw(ViewBag.RevenueDates ?? "[]");
+        var rvTotals = @Html.Raw(ViewBag.RevenueTotals ?? "[]");
+
+        var ctxRev = document.getElementById('revenueChart').getContext('2d');
+        
+        // Gradient background
+        var gradientRev = ctxRev.createLinearGradient(0, 0, 0, 400);
+        gradientRev.addColorStop(0, 'rgba(110, 107, 250, 0.4)');
+        gradientRev.addColorStop(1, 'rgba(110, 107, 250, 0.0)');
+
+        new Chart(ctxRev, {
+            type: 'line',
+            data: {
+                labels: rvDates,
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: rvTotals,
+                    borderColor: '#6e6bfa',
+                    backgroundColor: gradientRev, // Fill with gradient
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4, // Smooth curve
+                    pointRadius: 0,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false }
+                    },
+                    y: {
+                        border: { display: false },
+                        grid: { color: '#f3f3f3' },
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                if (value >= 1000000) return (value / 1000000) + 'tr';
+                                if (value >= 1000) return (value / 1000) + 'k';
+                                return value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // --- ORDER CHART ---
+        var orderDates = @Html.Raw(ViewBag.OrderDates ?? "[]");
+        var orderCounts = @Html.Raw(ViewBag.OrderCounts ?? "[]");
+
+        var ctxOrd = document.getElementById('orderChart').getContext('2d');
+        new Chart(ctxOrd, {
+            type: 'bar',
+            data: {
+                labels: orderDates,
+                datasets: [{
+                    label: 'Số đơn',
+                    data: orderCounts,
+                    backgroundColor: '#a48df6',
+                    borderRadius: 4,
+                    barThickness: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxTicksLimit: 7 }
+                    },
+                    y: {
+                        border: { display: false },
+                        grid: { color: '#f3f3f3' },
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    });
+</script>

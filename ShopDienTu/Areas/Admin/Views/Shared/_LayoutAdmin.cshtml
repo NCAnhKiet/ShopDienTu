@@ -1,0 +1,221 @@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Purple Admin</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="../../LayoutAdmin/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="../../LayoutAdmin/assets/vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="../../LayoutAdmin/assets/css/style.css">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="../../LayoutAdmin/assets/images/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        body, .navbar, .sidebar, .content-wrapper, h1, h2, h3, h4, h5, h6, p, a, div, span, button, input, th, td { font-family: 'Inter', sans-serif !important; }
+        .sidebar { background-color: #fff; }
+        /* Đồng bộ màu chủ đạo Admin sang Teal (#0ea5a4) để giống User */
+        :root {
+            --bs-primary: #0ea5a4;
+        }
+        
+        .bg-gradient-primary { 
+            background: linear-gradient(135deg, #0ea5a4, #0c8d8c) !important; 
+        }
+        .text-primary, 
+        .sidebar .nav .nav-item.active > .nav-link .menu-title,
+        .sidebar .nav .nav-item.active > .nav-link i {
+            color: #0ea5a4 !important;
+        }
+        .btn-gradient-primary {
+            background: linear-gradient(135deg, #0ea5a4, #0c8d8c) !important;
+            border: 0 !important;
+        }
+        .btn-gradient-primary:hover {
+            box-shadow: 0 4px 10px rgba(14, 165, 164, 0.3) !important;
+        }
+        .btn-primary, .badge-primary { 
+            background-color: #0ea5a4 !important; 
+            border-color: #0ea5a4 !important; 
+        }
+        .btn-primary:hover { 
+            background-color: #0c8d8c !important; 
+            border-color: #0c8d8c !important; 
+        }
+        .sidebar .nav .nav-item.active > .nav-link:before {
+            background: #0ea5a4 !important;
+        }
+        /* Fix input display that inherited bad templates */
+        .form-control, .select2-container .select2-selection--single {
+            border: 1px solid #ebedf2;
+        }
+        .form-control:focus {
+            border-color: #0ea5a4;
+            box-shadow: 0 0 0 0.2rem rgba(14, 165, 164, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-scroller">
+        <!-- partial:../../partials/_navbar.html -->
+        <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+                @* <a class="navbar-brand brand-logo" href="../../index.html"><img src="../../LayoutAdmin/assets/images/logo.svg" alt="logo" /></a>
+                <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="../../LayoutAdmin/assets/images/logo-mini.svg" alt="logo" /></a> *@
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-stretch">
+                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+                <div class="d-none d-md-flex align-items-center h-100 ms-3">
+                    <h5 class="m-0 text-muted fw-bold">Trang Quản Trị Hệ Thống</h5>
+                </div>
+                <ul class="navbar-nav navbar-nav-right">
+                    <li class="nav-item d-none d-lg-block full-screen-link">
+                        <a class="nav-link" title="Toàn màn hình">
+                            <i class="mdi mdi-fullscreen" id="fullscreen-button"></i>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item nav-profile dropdown">
+                        <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="nav-profile-img">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #0ea5a4, #0b8281); color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; box-shadow: 0 2px 5px rgba(14,165,164,0.3); border: 2px solid #fff;">
+                                    <i class="mdi mdi-account"></i>
+                                </div>
+                                <span class="availability-status online"></span>
+                            </div>
+                            <div class="nav-profile-text">
+                                <p class="mb-0 text-black fw-bold" style="font-size: 0.9rem;">@(Context.Session.GetString("FullName") ?? Context.Session.GetString("Email") ?? "Quản trị")</p>
+                                <span class="text-muted" style="font-size: 0.75rem;">@(Context.Session.GetInt32("Role") == 1 ? "Admin" : "Nhân Viên")</span>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
+                            <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index">
+                                <i class="mdi mdi-home-outline me-2 text-primary"></i> Về trang khách
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" asp-area="" asp-controller="Access" asp-action="Logout">
+                                <i class="mdi mdi-logout me-2 text-danger"></i> Đăng xuất
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+            </div>
+        </nav>
+        <!-- partial -->
+        <div class="container-fluid page-body-wrapper">
+            <!-- partial:../../partials/_sidebar.html -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <ul class="nav">
+                    <li class="nav-item nav-profile">
+                        <a href="#" class="nav-link">
+                            <div class="nav-profile-image">
+                                <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #0ea5a4, #0b8281); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 10px rgba(14,165,164,0.3); border: 2px solid #fff;">
+                                    <i class="mdi mdi-account"></i>
+                                </div>
+                                <span class="login-status online"></span>
+                                <!--change to offline or busy as needed-->
+                            </div>
+                            <div class="nav-profile-text d-flex flex-column">
+                                <span class="font-weight-bold mb-2">@(Context.Session.GetString("FullName") ?? "Quản trị")</span>
+                                <span class="text-secondary text-small">@(Context.Session.GetInt32("Role") == 1 ? "Quản Trị Viên (Admin)" : "Nhân Viên")</span>
+                            </div>
+                            <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="admin" asp-controller="HomeAdmin" asp-action="Index">
+                            <span class="menu-title">Thống kê</span>
+                            <i class="mdi mdi-chart-line menu-icon"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+                            <span class="menu-title">Quản lý</span>
+                            <i class="menu-arrow"></i>
+                            <i class="mdi mdi-crosshairs-gps menu-icon"></i>
+                        </a>
+                        <div class="collapse" id="ui-basic">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" asp-area="admin" asp-controller="HomeAdmin" Asp-action="DanhMucSanPham" >Danh mục sản phẩm</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="admin"
+                                       asp-controller="HomeAdmin"
+                                       asp-action="Orders">Quản lý đơn hàng</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="admin" asp-controller="AccountAdmin" asp-action="Customers">
+                            <span class="menu-title">Khách hàng</span>
+                            <i class="mdi mdi-account-multiple menu-icon"></i>
+                        </a>
+                    </li>
+                    @if (Context.Session.GetInt32("Role") == 1)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="admin" asp-controller="AccountAdmin" asp-action="Staffs">
+                                <span class="menu-title">Nhân viên</span>
+                                <i class="mdi mdi-briefcase-account menu-icon"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="admin" asp-controller="LogAdmin" asp-action="Index">
+                                <span class="menu-title">Nhật ký hoạt động</span>
+                                <i class="mdi mdi-history menu-icon"></i>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+            <!-- partial -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    @RenderBody()
+                </div>
+                <!-- content-wrapper ends -->
+                <!-- partial:../../partials/_footer.html -->
+                <footer class="footer" style="background-color: #fff; border-top: 1px solid var(--border); padding: 20px;">
+                    <div class="container-fluid d-flex justify-content-between align-items-center">
+                        <span class="text-muted d-block text-center text-sm-start d-sm-inline-block fw-bold" style="font-size: 0.85rem;">
+                            &copy; @DateTime.Now.Year <span style="color: #0ea5a4;">ShopĐiệnTử</span>. Độc quyền phát hành.
+                        </span>
+                        <span class="float-none float-sm-end mt-1 mt-sm-0 text-end text-muted fw-bold" style="font-size: 0.85rem;">
+                            Hệ thống Quản Trị Hệ Sinh Thái Công Nghệ v1.0
+                        </span>
+                    </div>
+                </footer>
+                <!-- partial -->
+            </div>
+            <!-- main-panel ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="../../LayoutAdmin/assets/vendors/js/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="../../LayoutAdmin/assets/js/off-canvas.js"></script>
+    <script src="../../LayoutAdmin/assets/js/hoverable-collapse.js"></script>
+    <script src="../../LayoutAdmin/assets/js/misc.js"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page -->
+    <!-- End custom js for this page -->
+</body>
+</html>

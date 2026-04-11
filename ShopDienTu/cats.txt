@@ -1,0 +1,9 @@
+CategoryId  CategoryName                                                                                        
+----------- ----------------------------------------------------------------------------------------------------
+          1 Ði?n tho?i                                                                                          
+          2 Laptop                                                                                              
+          3 Máy tính b?ng                                                                                       
+          4 Ð?ng h? thông minh                                                                                  
+          5 Tai nghe / Loa                                                                                      
+
+(5 rows affected)

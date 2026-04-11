@@ -1,0 +1,80 @@
+@model List<ShopDienTu.MoDels.ActivityLog>
+
+@{
+    ViewData["Title"] = "Nhật ký hệ thống";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h3 class="font-weight-bold mb-4">Nhật Ký Hoạt Động Của Quản Trị Viên</h3>
+
+<div class="card" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-secondary">
+                    <tr>
+                        <th style="width: 15%">Thời gian</th>
+                        <th style="width: 25%">Người thực hiện</th>
+                        <th style="width: 20%">Hành động</th>
+                        <th style="width: 40%">Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td>@log.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                            <td class="font-weight-bold text-primary">@log.Email</td>
+                            <td>
+                                @if(log.Action.Contains("Thêm") || log.Action.Contains("Cập nhật")) {
+                                    <span class="badge badge-success">@log.Action</span>
+                                }
+                                else if(log.Action.Contains("Sửa")) {
+                                    <span class="badge badge-warning">@log.Action</span>
+                                }
+                                else if(log.Action.Contains("Xóa") || log.Action.Contains("Hủy")) {
+                                    <span class="badge badge-danger">@log.Action</span>
+                                }
+                                else {
+                                    <span class="badge badge-info">@log.Action</span>
+                                }
+                            </td>
+                            <td class="text-muted">@log.Details</td>
+                        </tr>
+                    }
+                    
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">Chưa có bản ghi hoạt động nào.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        @if (ViewBag.TotalPages > 1)
+        {
+             <div class="mt-4 d-flex justify-content-center">
+                 <ul class="pagination">
+                     @if (ViewBag.CurrentPage > 1)
+                     {
+                         <li class="page-item"><a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)">Previous</a></li>
+                     }
+                     @for (int p = 1; p <= ViewBag.TotalPages; p++)
+                     {
+                         <li class="page-item @(p == ViewBag.CurrentPage ? "active" : "")">
+                             <a class="page-link" asp-action="Index" asp-route-page="@p">@p</a>
+                         </li>
+                     }
+                     @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                     {
+                         <li class="page-item"><a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)">Next</a></li>
+                     }
+                 </ul>
+             </div>
+        }
+    </div>
+</div>

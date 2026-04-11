@@ -1,0 +1,13 @@
+﻿
+@using ShopDienTu.MoDels;
+@model IEnumerable<Category>
+
+<div class="hero__categories">
+    <div class="hero__categories__all"><i class="fa fa-bars"></i> Danh mục</div>
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li><a asp-controller="Home" asp-action="SanPhamTheoLoai" asp-route-categoryId="@item.CategoryId">@item.CategoryName</a></li>
+        }
+    </ul>
+</div>

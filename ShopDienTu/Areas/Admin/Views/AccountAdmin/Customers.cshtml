@@ -1,0 +1,281 @@
+@model List<ShopDienTu.MoDels.Customer>
+
+@{
+    ViewData["Title"] = "Quản lý Khách Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<style>
+    .customer-page-wrapper {
+        font-family: 'Inter', sans-serif;
+        color: #334155;
+    }
+
+    .text-muted-custom {
+        color: #64748b;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .btn-create-new {
+        background-color: #6366f1;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 0.6rem 1.2rem;
+        border: none;
+        transition: 0.2s;
+    }
+    .btn-create-new:hover {
+        background-color: #4f46e5;
+        color: #fff;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border-top: 4px solid #e2e8f0;
+    }
+    .stat-card.blue-top { border-top-color: #3b82f6; }
+    .stat-card.green-top { border-top-color: #10b981; }
+    .stat-card.amber-top { border-top-color: #f59e0b; }
+    .stat-card.purple-top { border-top-color: #8b5cf6; }
+
+    .stat-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        margin-top: 1.5rem;
+    }
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .modern-table th {
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #64748b;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .modern-table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e2e8f0;
+        color: #475569;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .info-line {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 0.2rem;
+    }
+    .info-line i {
+        font-size: 0.9rem;
+        color: #94a3b8;
+        margin-right: 4px;
+    }
+
+    /* Actions */
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: none;
+        margin-right: 4px;
+        transition: 0.2s;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .btn-edit { background-color: #f1f5f9; color: #64748b; }
+    .btn-edit:hover { background-color: #e2e8f0; color: #334155; }
+    .btn-delete { background-color: #fef2f2; color: #ef4444; }
+    .btn-delete:hover { background-color: #fee2e2; color: #dc2626; }
+
+    /* Pagination */
+    .table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 1rem;
+    }
+    .modern-pagination {
+        display: flex;
+        gap: 0.3rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .modern-pagination .page-link {
+        border-radius: 6px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #64748b;
+        border: 1px solid transparent;
+        background: transparent;
+    }
+    .modern-pagination .page-link:hover { background-color: #f1f5f9; }
+    .modern-pagination .active .page-link {
+        background-color: #6366f1; color: white;
+    }
+</style>
+
+<div class="customer-page-wrapper">
+    
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <div class="text-muted-custom mb-1">QUẢN LÝ / KHÁCH HÀNG</div>
+            <h2 class="page-title mb-0">Hồ Sơ Khách Hàng</h2>
+        </div>
+        <div>
+            <a asp-area="admin" asp-controller="AccountAdmin" asp-action="CreateCustomer" class="btn btn-create-new">
+                <i class="mdi mdi-plus fw-bold"></i> Thêm Khách Hàng
+            </a>
+        </div>
+    </div>
+
+    <!-- 4 Cards -->
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="stat-card blue-top">
+                <div class="stat-title">TỔNG KHÁCH HÀNG</div>
+                <div class="stat-value">@String.Format("{0:N0}", ViewBag.TotalCustomersCount)</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card green-top">
+                <div class="stat-title">NGƯỜI DÙNG MỚI ĐĂNG KÝ</div>
+                <div class="stat-value">@ViewBag.NewCustomers</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card amber-top">
+                <div class="stat-title">HOẠT ĐỘNG THƯỜNG XUYÊN</div>
+                <div class="stat-value">@ViewBag.ActiveUsers</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card purple-top">
+                <div class="stat-title">TỈ LỆ CHUYỂN ĐỔI MUA HÀNG</div>
+                <div class="stat-value">@ViewBag.ConversionRate</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th colspan="2">KHÁCH HÀNG</th>
+                    <th>EMAIL</th>
+                    <th>LIÊN HỆ</th>
+                    <th class="text-end">THAO TÁC</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    string fullName = string.IsNullOrEmpty(item.FullName) ? "Chưa cung cấp" : item.FullName;
+                    var initials = string.Join("", fullName.Split(' ').Where(s => s.Length > 0).Select(s => s[0]).Take(2)).ToUpper();
+
+                    <tr>
+                        <td class="font-weight-bold" style="color:#64748b;">#@item.CustomerId</td>
+                        <td style="width: 50px;">
+                            <div class="avatar-circle">@initials</div>
+                        </td>
+                        <td>
+                            <div style="font-weight:700; color:#0f172a; font-size:0.95rem;">@fullName</div>
+                        </td>
+                        <td>
+                            <div class="info-line"><i class="mdi mdi-email-outline"></i> @item.Email</div>
+                        </td>
+                        <td>
+                            <div class="info-line"><i class="mdi mdi-phone-outline"></i> @(string.IsNullOrEmpty(item.Phone) ? "Trống" : item.Phone)</div>
+                            <div class="info-line"><i class="mdi mdi-map-marker-outline"></i> @(string.IsNullOrEmpty(item.Address) ? "Trống" : item.Address)</div>
+                        </td>
+                        <td class="text-end">
+                            <a asp-action="EditCustomer" asp-route-id="@item.CustomerId" class="action-btn btn-edit" title="Sửa">
+                                <i class="mdi mdi-pencil"></i>
+                            </a>
+                            <form asp-action="DeleteCustomer" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa khách hàng @item.Email?')">
+                                <input type="hidden" name="id" value="@item.CustomerId" />
+                                <button type="submit" class="action-btn btn-delete" title="Xóa">
+                                    <i class="mdi mdi-delete"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if(!Model.Any()) {
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">Chưa có khách hàng nào.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Navigation -->
+        <div class="table-footer">
+            <div class="showing-text">Đang hiển thị trang @ViewBag.CurrentPage / @ViewBag.TotalPages</div>
+            <ul class="modern-pagination">
+                @if (ViewBag.CurrentPage > 1) {
+                    <li><a class="page-link" asp-action="Customers" asp-route-page="@(ViewBag.CurrentPage - 1)">&lt;</a></li>
+                }
+                @for (int p = 1; p <= ViewBag.TotalPages; p++) {
+                    <li class="@(p == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Customers" asp-route-page="@p">@p</a>
+                    </li>
+                }
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages) {
+                    <li><a class="page-link" asp-action="Customers" asp-route-page="@(ViewBag.CurrentPage + 1)">&gt;</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

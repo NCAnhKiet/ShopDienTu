@@ -1,0 +1,436 @@
+@using ShopDienTu.MoDels;
+@model IEnumerable<ShopDienTu.MoDels.Product>
+
+@{
+    ViewData["Title"] = "Product Categories";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<style>
+    /* Tổng thể để tông màu sáng hiện đại */
+    .product-page-wrapper {
+        font-family: 'Inter', sans-serif;
+        color: #334155;
+    }
+
+    .text-muted-custom {
+        color: #64748b;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .btn-create-new {
+        background-color: #6366f1;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 0.6rem 1.2rem;
+        border: none;
+        transition: 0.2s;
+    }
+    .btn-create-new:hover {
+        background-color: #4f46e5;
+        color: #fff;
+    }
+
+    /* Các thẻ thống kê (Cards) */
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        border-top: 4px solid #e2e8f0;
+        height: 100%;
+        transition: transform 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+    .stat-card.blue-top { border-top-color: #3b82f6; }
+    .stat-card.gray-top { border-top-color: #64748b; }
+    .stat-card.red-top { border-top-color: #ef4444; }
+    .stat-card.indigo-top { border-top-color: #6366f1; }
+    
+    .stat-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+    .stat-extra {
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .text-success-custom { color: #10b981; }
+    .text-danger-custom { color: #ef4444; }
+    
+    /* Bảng dữ liệu */
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        margin-top: 1.5rem;
+    }
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .modern-table th {
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #64748b;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .modern-table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+    .modern-table tr:hover td {
+        background-color: #f8fafc;
+    }
+    .modern-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Chi tiết trong hàng */
+    .prod-img {
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background-color: #f8fafc;
+    }
+    .prod-name {
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.1rem;
+        font-size: 0.95rem;
+    }
+    .prod-sku {
+        font-size: 0.7rem;
+        color: #3b82f6;
+        font-weight: 600;
+    }
+    .prod-price {
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .color-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+    }
+    .size-badge {
+        background-color: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #475569;
+    }
+
+    /* Actions */
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: none;
+        margin-right: 4px;
+        transition: 0.2s;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .btn-edit {
+        background-color: #f1f5f9;
+        color: #64748b;
+    }
+    .btn-edit:hover { background-color: #e2e8f0; color: #334155; }
+    .btn-delete {
+        background-color: #fef2f2;
+        color: #ef4444;
+    }
+    .btn-delete:hover { background-color: #fee2e2; color: #dc2626; }
+
+    /* Phân trang */
+    .table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 1rem;
+    }
+    .showing-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+    .modern-pagination {
+        display: flex;
+        gap: 0.3rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .modern-pagination .page-link {
+        border-radius: 6px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #64748b;
+        border: 1px solid transparent;
+        background: transparent;
+        transition: 0.2s;
+    }
+    .modern-pagination .page-link:hover {
+        background-color: #f1f5f9;
+    }
+    .modern-pagination .active .page-link {
+        background-color: #6366f1;
+        color: white;
+        border-color: #6366f1;
+    }
+    
+    /* Panel dưới cùng */
+    .bottom-widget {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        margin-top: 1.5rem;
+    }
+    .widget-title {
+        font-weight: 800;
+        color: #0f172a;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    .widget-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        line-height: 1.5;
+    }
+    .sync-icon-box {
+        background-color: #f8fafc;
+        border-radius: 12px;
+        width: 64px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3b82f6;
+        font-size: 1.5rem;
+    }
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #10b981;
+        display: inline-block;
+        margin-right: 6px;
+    }
+</style>
+
+<div class="product-page-wrapper">
+    
+    <!-- Tiêu đề và nút -->
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <div class="text-muted-custom mb-1">QUẢN LÝ / SẢN PHẨM</div>
+            <h2 class="page-title mb-0">Danh Mục Sản Phẩm</h2>
+        </div>
+        <div>
+            <a asp-action="ThemSanPhamMoi" class="btn btn-create-new">
+                <i class="mdi mdi-plus fw-bold"></i> Thêm Mới
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info border-0 rounded-3 mb-4 shadow-sm" style="background:#eff6ff; color:#1e40af;">
+            @TempData["Message"]
+        </div>
+    }
+
+    <!-- Top 4 Cards -->
+    <div class="row g-3">
+        <div class="col-md-3">
+            <div class="stat-card blue-top">
+                <div class="stat-title">TỔNG SẢN PHẨM</div>
+                <div class="stat-value">
+                    @String.Format("{0:N0}", ViewBag.TotalItemsCount)
+                    <span class="stat-extra text-success-custom ms-1">+12%</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card gray-top">
+                <div class="stat-title">DANH MỤC BẬT</div>
+                <div class="stat-value text-muted-custom" style="font-size: 1.8rem;">
+                    @ViewBag.ActiveCategories
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card red-top">
+                <div class="stat-title">SẮP HẾT HÀNG</div>
+                <div class="stat-value text-danger-custom">08</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card indigo-top">
+                <div class="stat-title">GIÁ TRỊ KHO BÃI</div>
+                <div class="stat-value">
+                    @String.Format("{0:N0}", ViewBag.StockValue) <span style="font-size:1.2rem; color:#64748b;">đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng Dữ Liệu -->
+    <div class="table-container">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>HÌNH ẢNH</th>
+                    <th>TÊN SẢN PHẨM</th>
+                    <th>GIÁ</th>
+                    <th>MÀU</th>
+                    <th>KÍCH CỠ</th>
+                    <th class="text-end">THAO TÁC</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <!-- ẢNH -->
+                        <td>
+                            @{
+                                var imgSrc = string.IsNullOrEmpty(item.ImageUrl) ? "" 
+                                    : (item.ImageUrl.StartsWith("/") 
+                                        ? item.ImageUrl 
+                                        : Url.Content("~/ProductsImages/" + item.ImageUrl));
+                            }
+                            @if (!string.IsNullOrEmpty(imgSrc)) {
+                                <img src="@imgSrc" class="prod-img" onerror="this.src='/images/placeholder.jpg'" />
+                            }
+                            else {
+                                <div class="prod-img d-flex align-items-center justify-content-center text-muted" style="font-size:0.7rem;">Trống</div>
+                            }
+                        </td>
+
+                        <!-- TÊN -->
+                        <td>
+                            <div class="prod-name">@item.ProductName</div>
+                            <div class="prod-sku">Mã: SP-@item.ProductId-@item.CategoryId</div>
+                        </td>
+
+                        <!-- GIÁ -->
+                        <td class="prod-price">
+                            @String.Format("{0:N0} đ", item.Price)
+                        </td>
+
+                        <!-- MÀU -->
+                        <td>
+                            @{
+                                string dotColor = "gray";
+                                string m = item.Color?.ToLower() ?? "";
+                                if (m.Contains("red") || m.Contains("đỏ")) dotColor = "#ef4444";
+                                else if (m.Contains("blue") || m.Contains("xanh dương") || m.Contains("xanh lam")) dotColor = "#3b82f6";
+                                else if (m.Contains("black") || m.Contains("đen")) dotColor = "#1e293b";
+                                else if (m.Contains("white") || m.Contains("trắng")) dotColor = "#f8fafc; border:1px solid #cbd5e1";
+                                else if (m.Contains("purple") || m.Contains("tím")) dotColor = "#8b5cf6";
+                                else dotColor = "#94a3b8";
+                            }
+                            <span class="color-dot" style="background-color: @dotColor;"></span>
+                            <span class="font-weight-bold" style="font-size:0.85rem">@(string.IsNullOrEmpty(item.Color) ? "Mặc định" : item.Color)</span>
+                        </td>
+
+                        <!-- SIZE -->
+                        <td>
+                            <span class="size-badge">@(string.IsNullOrEmpty(item.Size) ? "F" : item.Size)</span>
+                        </td>
+
+                        <!-- ACTION -->
+                        <td class="text-end">
+                            <a asp-action="SuaSanPham" asp-route-productId="@item.ProductId" class="action-btn btn-edit" title="Sửa">
+                                <i class="mdi mdi-pencil"></i>
+                            </a>
+                            <form asp-action="XoaSanPham" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" class="action-btn btn-delete" title="Xóa">
+                                    <i class="mdi mdi-delete"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                
+                @if(!Model.Any()) {
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">Chưa có sản phẩm nào.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Footer Phân Trang -->
+        <div class="table-footer">
+            <div class="showing-text">
+                Đang hiển thị trang @ViewBag.CurrentPage / @ViewBag.TotalPages
+            </div>
+            
+            <ul class="modern-pagination">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li><a class="page-link" asp-action="DanhMucSanPham" asp-route-page="@(ViewBag.CurrentPage - 1)">&lt;</a></li>
+                }
+                
+                @for (int p = 1; p <= ViewBag.TotalPages; p++)
+                {
+                    <li class="@(p == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="DanhMucSanPham" asp-route-page="@p">@p</a>
+                    </li>
+                }
+                
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li><a class="page-link" asp-action="DanhMucSanPham" asp-route-page="@(ViewBag.CurrentPage + 1)">&gt;</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+
+
+</div>

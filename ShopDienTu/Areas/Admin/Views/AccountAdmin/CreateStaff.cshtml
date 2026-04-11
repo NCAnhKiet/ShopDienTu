@@ -1,0 +1,42 @@
+@model ShopDienTu.MoDels.Customer
+
+@{
+    ViewData["Title"] = "Thêm Nhân sự";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h3 class="mb-4">Tạo Tài Khoản Nhân Sự</h3>
+
+<div class="card" style="border-radius: 12px; max-width: 600px;">
+    <div class="card-body">
+        <form asp-action="CreateStaff" method="post">
+            <div class="form-group mb-3">
+                <label>Email đăng nhập <span class="text-danger">*</span></label>
+                <input asp-for="Email" class="form-control" type="email" required placeholder="admin@example.com" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label>Họ và Tên</label>
+                <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label>Mật khẩu <span class="text-danger">*</span></label>
+                <input asp-for="Password" class="form-control" type="password" required />
+            </div>
+
+            <div class="form-group mb-4">
+                <label>Phân Quyền <span class="text-danger">*</span></label>
+                <select name="RoleType" class="form-select form-control">
+                    <option value="3">Nhân viên (Xem và Xử lý sản phẩm)</option>
+                    <option value="1">Admin (Kiểm soát toàn hệ thống)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-gradient-primary w-100 py-3">Tạo Tài Khoản</button>
+            <a asp-action="Staffs" class="btn btn-light w-100 mt-2">Hủy quay về</a>
+        </form>
+    </div>
+</div>

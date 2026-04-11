@@ -1,0 +1,129 @@
+@model ShopDienTu.MoDels.Customer
+@{
+    ViewData["Title"] = "Hồ sơ của tôi";
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+    ViewData["HideSidebar"] = "true";
+    var roleName = Model.Role == 1 ? "Quản Trị Viên" : (Model.Role == 3 ? "Nhân Viên" : "Khách Hàng");
+    var roleClass = Model.Role == 1 ? "bg-danger" : (Model.Role == 3 ? "bg-info" : "bg-success");
+}
+
+<style>
+    .profile-card { background: #fff; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.03); padding: 2rem; position: relative; overflow: hidden;}
+    .profile-avatar-container { text-align: center; margin-bottom: 1.5rem; }
+    .profile-avatar { width: 120px; height: 120px; border-radius: 50%; font-size: 3rem; background: linear-gradient(135deg, #0ea5a4, #0b8281); color: #fff; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(14, 165, 164, 0.3); }
+    .profile-form-label { font-weight: 600; color: var(--text-main); margin-bottom: 0.4rem; font-size: 0.9rem;}
+    .profile-form-control { border-radius: 8px; border: 1px solid #ccc; padding: 0.7rem 1rem; transition: 0.2s; width: 100%; display: block; background: #fafafa;}
+    .profile-form-control:focus { outline: none; border-color: #0ea5a4; box-shadow: 0 0 0 3px rgba(14,165,164,0.15); background: #fff;}
+    .btn-save-profile { background: linear-gradient(135deg, #0ea5a4, #0b8281); color: #fff; font-weight: 700; border: none; padding: 0.8rem 2rem; border-radius: 8px; transition: 0.2s; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1.05rem;}
+    .btn-save-profile:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(14, 165, 164, 0.3); }
+    .role-badge { display: inline-block; padding: 0.4rem 1rem; color: #fff; border-radius: 50px; font-weight: 600; font-size: 0.85rem; margin-top: 10px; }
+    .section-title { font-weight: 800; font-size: 1.25rem; color: var(--text-main); padding-bottom: 15px; border-bottom: 2px solid var(--border); margin-bottom: 25px; }
+    
+    .floating-alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .alert-s { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .alert-e { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+</style>
+
+<div class="row" style="max-width: 1200px; width: 100%; margin: 2rem auto; gap: 20px;">
+    
+    @if (TempData["Success"] != null)
+    {
+        <div class="col-12">
+            <div class="floating-alert alert-s">
+                <i class="bi bi-check-circle-fill fs-5"></i> @TempData["Success"]
+            </div>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-12">
+            <div class="floating-alert alert-e">
+                <i class="bi bi-exclamation-triangle-fill fs-5"></i> @TempData["Error"]
+            </div>
+        </div>
+    }
+
+    <!-- Left Column: Avatar & Basic abstract -->
+    <div class="col-md-4">
+        <div class="profile-card h-100 d-flex flex-column align-items-center">
+            <div class="profile-avatar-container">
+                <div class="profile-avatar">
+                    <i class="bi bi-person"></i>
+                </div>
+                <h4 class="mt-3 fw-bold mb-1" style="color: var(--text-main);">@(Model.FullName ?? "Người dùng")</h4>
+                <p class="text-muted mb-0" style="font-size:0.9rem;">@Model.Email</p>
+                <div class="role-badge @roleClass">
+                    @roleName
+                </div>
+            </div>
+            
+            <div class="w-100 mt-4 pt-4" style="border-top: 1px dashed var(--border);">
+                @if (Model.Role == 1 || Model.Role == 3)
+                {
+                    <a href="/admin/homeadmin" class="btn btn-save-profile" style="background: linear-gradient(135deg, #ff9800, #f57c00); margin-bottom: 10px;">
+                        <i class="bi bi-shield-lock"></i> Khu vực Quản Trị Hệ Thống
+                    </a>
+                }
+                <a href="/Order/MyOrders" class="btn btn-save-profile" style="background: #e2e8f0; color: #333; margin-bottom: 10px; box-shadow: none;">
+                    <i class="bi bi-box-seam"></i> Lịch sử Đơn Hàng
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Edit Form -->
+    <div class="col-md-8">
+        <div class="profile-card">
+            <div class="section-title">
+                Chỉnh Sửa Hồ Sơ Cá Nhân
+            </div>
+            
+            <form asp-action="UpdateProfile" asp-controller="Profile" method="post">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label class="profile-form-label">Email đăng nhập (Không thể thay đổi)</label>
+                        <input type="email" class="profile-form-control" name="Email" value="@Model.Email" readonly style="background: #e9ecef; cursor: not-allowed; color:#6c757d;" />
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="profile-form-label">Họ và Tên</label>
+                        <input type="text" class="profile-form-control" name="FullName" value="@Model.FullName" placeholder="Nhập họ tên đầy đủ..." required />
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="profile-form-label">Số điện thoại</label>
+                        <input type="text" class="profile-form-control" name="Phone" value="@Model.Phone" placeholder="Nhập số điện thoại của bạn..." />
+                    </div>
+                    
+                    <div class="col-12">
+                        <label class="profile-form-label">Địa chỉ giao hàng mặc định</label>
+                        <textarea class="profile-form-control" name="Address" rows="3" placeholder="Nhập địa chỉ nhận hàng của bạn...">@Model.Address</textarea>
+                    </div>
+
+                    <div class="col-12 mt-4 pt-2">
+                        <div class="section-title mb-3" style="font-size: 1.1rem;">
+                            Đổi Mật Khẩu (Tùy chọn)
+                        </div>
+                        <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 15px;">Bỏ trống nếu bạn không muốn thay đổi mật khẩu hiện tại.</p>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="profile-form-label text-danger">Mật khẩu hiện tại</label>
+                        <input type="password" class="profile-form-control" name="CurrentPassword" placeholder="••••••••" />
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="profile-form-label text-danger">Mật khẩu mới</label>
+                        <input type="password" class="profile-form-control" name="NewPassword" placeholder="••••••••" />
+                    </div>
+                    
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn-save-profile">
+                            <i class="bi bi-person-check-fill"></i> LƯU THAY ĐỔI
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

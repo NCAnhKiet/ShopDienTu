@@ -1,0 +1,115 @@
+@model List<ShopDienTu.Models.Order>
+@{
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<div class="mb-4">
+    <h3 class="fw-bold m-0" style="color: var(--text-main);">ĐƠN HÀNG CỦA TÔI</h3>
+    <p class="text-muted m-0" style="font-size: 0.9rem;">Xem và theo dõi trạng thái các đơn hàng đã đặt.</p>
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="bg-white rounded-4 shadow-sm p-5 text-center my-4">
+        <i class="bi bi-box-seam text-muted mb-3" style="font-size: 4rem; opacity: 0.3;"></i>
+        <h5 class="fw-bold text-dark">Bạn chưa có đơn hàng nào</h5>
+        <div class="mt-4">
+            <a href="/Product" class="btn text-white fw-bold px-4" style="background: var(--accent); border-radius: 8px;">Mua Nhanh Sản Phẩm Mới</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="bg-white rounded-4 shadow-sm p-4">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">
+                        <th class="border-0 pb-3">Đơn hàng #</th>
+                        <th class="border-0 pb-3">Ngày đặt</th>
+                        <th class="border-0 pb-3">Chi tiết SP</th>
+                        <th class="border-0 pb-3">Tổng tiền</th>
+                        <th class="border-0 pb-3">Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr class="border-top">
+                            <td class="py-4">
+                                <span class="fw-bold text-dark">@order.OrderId</span>
+                            </td>
+                            <td class="py-4 text-muted" style="font-size: 0.9rem;">
+                                @order.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                            </td>
+                            <td class="py-4">
+                                <ul class="list-unstyled m-0">
+                                    @foreach (var detail in order.OrderDetails)
+                                    {
+                                        <li class="mb-1 text-dark" style="font-size: 0.85rem;">
+                                            <span class="fw-semibold">@detail.Quantity x</span> @detail.Product.ProductName
+                                        </li>
+                                    }
+                                </ul>
+                            </td>
+                            <td class="py-4">
+                                <span class="fw-bold" style="color: var(--accent);">@String.Format("{0:N0}₫", order.TotalPrice)</span>
+                            </td>
+                            <td class="py-4">
+                                @if (order.Status == "Đã đặt" || order.Status == "Đang xử lý" || order.Status == "Pending")
+                                {
+                                    <span class="badge text-bg-warning rounded-pill px-3 py-2 text-dark mb-2 d-inline-block"><i class="bi bi-hourglass-split me-1"></i> @order.Status</span>
+                                    <form asp-controller="Order" asp-action="Cancel" method="post" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?');">
+                                        <input type="hidden" name="orderId" value="@order.OrderId" />
+                                        <button type="submit" class="btn btn-sm btn-light text-danger fw-bold shadow-sm d-flex align-items-center mx-auto" style="border-radius: 6px; font-size: 0.8rem;">
+                                            <i class="bi bi-x-circle me-1"></i> Hủy đơn
+                                        </button>
+                                    </form>
+                                }
+                                else if (order.Status == "Success" || order.Status == "Giao thành công" || order.Status == "Đã giao")
+                                {
+                                    <span class="badge text-bg-success rounded-pill px-3 py-2"><i class="bi bi-check-circle me-1"></i> @order.Status</span>
+                                }
+                                else if (order.Status == "Cancel" || order.Status == "Đã hủy")
+                                {
+                                    <span class="badge text-bg-danger rounded-pill px-3 py-2"><i class="bi bi-x-circle me-1"></i> Đã hủy</span>
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-secondary rounded-pill px-3 py-2">@order.Status</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav class="mt-4 d-flex justify-content-end">
+            <ul class="pagination pagination-sm m-0 shadow-sm" style="border-radius: 8px; overflow:hidden;">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link text-secondary fw-semibold border-0" asp-controller="Order" asp-action="MyOrders" asp-route-page="@(ViewBag.CurrentPage - 1)">&laquo;</a>
+                    </li>
+                }
+                @for (int p = 1; p <= ViewBag.TotalPages; p++)
+                {
+                    <li class="page-item @(p == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link @(p == ViewBag.CurrentPage ? "bg-dark text-white" : "text-secondary") fw-semibold border-0" asp-controller="Order" asp-action="MyOrders" asp-route-page="@p">@p</a>
+                    </li>
+                }
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link text-secondary fw-semibold border-0" asp-controller="Order" asp-action="MyOrders" asp-route-page="@(ViewBag.CurrentPage + 1)">&raquo;</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}

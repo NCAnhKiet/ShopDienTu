@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] ?? "ShopDienTu")</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --accent: #0ea5a4;
+            --accent-hover: #0c8d8c;
+            --accent-light: rgba(14,165,164,0.08);
+            --sidebar-w: 210px;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --bg-sidebar: #f8fafc;
+            --bg-body: #f1f5f9;
+            --bg-white: #ffffff;
+            --radius: 10px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== NAVBAR ===== */
+        .user-navbar {
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border);
+            height: 62px;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+        }
+        .navbar-brand-name {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--text-main);
+            margin-right: 2rem;
+            white-space: nowrap;
+        }
+        .navbar-brand-name span { color: var(--accent); }
+        .navbar-nav-links { display: flex; gap: 1.5rem; align-items: center; flex: 1; }
+        .navbar-nav-links a {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 0.3rem 0;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .navbar-nav-links a.active, .navbar-nav-links a:hover {
+            color: var(--text-main);
+            border-bottom-color: var(--accent);
+        }
+        .navbar-actions { display: flex; align-items: center; gap: 1.2rem; }
+        .navbar-actions a {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            position: relative;
+            transition: 0.2s;
+        }
+        .navbar-actions a:hover { color: var(--accent); }
+        .cart-badge {
+            position: absolute; top: -6px; right: -8px;
+            background: var(--accent); color: #fff;
+            border-radius: 50%; width: 16px; height: 16px;
+            font-size: 0.6rem; display: flex;
+            align-items: center; justify-content: center; font-weight: 700;
+        }
+        .btn-nav-outline {
+            font-size: 0.88rem; font-weight: 800;
+            padding: 0.45rem 1.1rem;
+            border-radius: 8px;
+            border: 2px solid var(--accent);
+            color: var(--accent) !important;
+            background: transparent;
+            transition: 0.2s;
+            display: inline-block;
+        }
+        .btn-nav-outline:hover { background: var(--accent) !important; color: #ffffff !important; box-shadow: 0 4px 10px var(--accent-light); }
+        .btn-nav-fill {
+            font-size: 0.88rem; font-weight: 800;
+            padding: 0.45rem 1.1rem;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #0ea5a4, #0b8281); 
+            color: #ffffff !important;
+            border: none; transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(14, 165, 164, 0.3);
+            display: inline-block;
+        }
+        .btn-nav-fill:hover { box-shadow: 0 6px 15px rgba(14, 165, 164, 0.4); transform: translateY(-1px); color: #ffffff !important; }
+
+        /* ===== LAYOUT: 2 cols (sidebar + content) ===== */
+        .page-wrapper {
+            display: flex;
+            flex: 1;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .user-sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 0;
+            min-height: calc(100vh - 62px);
+        }
+        .sidebar-group-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            padding: 0 1rem;
+            margin-bottom: 0.4rem;
+        }
+        .sidebar-section-title {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--text-main);
+            padding: 0 1rem;
+            margin-bottom: 1rem;
+        }
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.6rem 1rem;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: 0.15s;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+        .sidebar-nav-item:hover, .sidebar-nav-item.active {
+            color: var(--accent);
+            background-color: var(--accent-light);
+            border-left-color: var(--accent);
+        }
+        .sidebar-nav-item i { font-size: 1rem; flex-shrink: 0; }
+
+        /* ===== MAIN CONTENT ===== */
+        .user-main {
+            flex: 1;
+            padding: 1.5rem;
+            min-width: 0;
+        }
+
+        /* ===== FOOTER ===== */
+        .user-footer {
+            background: var(--bg-white);
+            border-top: 1px solid var(--border);
+            padding: 2.5rem 2rem 1rem;
+        }
+        .footer-brand {
+            font-size: 1.2rem; font-weight: 900;
+            color: var(--text-main); margin-bottom: 0.6rem;
+        }
+        .footer-brand span { color: var(--accent); }
+        .footer-desc {
+            font-size: 0.8rem; color: var(--text-muted);
+            line-height: 1.6; max-width: 220px;
+        }
+        .footer-heading {
+            font-size: 0.65rem; font-weight: 700;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.1em; margin-bottom: 0.9rem;
+        }
+        .footer-links { display: flex; flex-direction: column; gap: 0.45rem; }
+        .footer-links a { font-size: 0.83rem; color: var(--text-muted); transition: 0.2s; }
+        .footer-links a:hover { color: var(--accent); }
+        .footer-contact-item {
+            display: flex; align-items: flex-start; gap: 0.5rem;
+            font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;
+        }
+        .footer-contact-item i { color: var(--accent); margin-top: 2px; }
+        .footer-social-links { display: flex; gap: 0.6rem; margin-top: 0.8rem; }
+        .footer-social-links a {
+            width: 32px; height: 32px;
+            background: var(--bg-body); border: 1px solid var(--border);
+            border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); font-size: 0.9rem; transition: 0.2s;
+        }
+        .footer-social-links a:hover { color: var(--accent); border-color: var(--accent); }
+        .footer-bottom {
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid var(--border);
+            margin-top: 1.5rem; padding-top: 1rem;
+            font-size: 0.77rem; color: var(--text-muted);
+        }
+        .footer-bottom-links { display: flex; gap: 1.2rem; }
+        .footer-bottom-links a { color: var(--text-muted); }
+        .footer-bottom-links a:hover { color: var(--accent); }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .user-sidebar { display: none; }
+            .user-main { padding: 1rem; }
+        }
+
+        /* ===== USER DROPDOWN (AVATAR) ===== */
+        .user-dropdown-container { position: relative; margin-left: 10px; display: flex; align-items: center; }
+        .user-avatar-btn { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #0ea5a4, #0b8281); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 3px 8px rgba(14,165,164,0.3); border: 2px solid #fff; cursor: pointer; transition: 0.2s; }
+        .user-avatar-btn:hover { transform: scale(1.05); }
+        .user-dropdown-menu { position: absolute; top: 120%; right: 0; background: #fff; width: 240px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); border: 1px solid var(--border); overflow: hidden; opacity: 0; visibility: hidden; transition: 0.2s; z-index: 1000; transform: translateY(-10px); }
+        .user-dropdown-container:hover .user-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .user-dropdown-header { padding: 15px; background: #f8f9fa; border-bottom: 1px solid var(--border); }
+        .user-name { font-weight: 700; color: var(--text-main); font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-email { font-size: 0.8rem; color: var(--text-muted); word-break: break-all; }
+        .user-dropdown-body { padding: 8px 0; }
+        .user-dropdown-body a { display: flex; align-items: center; padding: 10px 20px; color: var(--text-main); text-decoration: none; font-size: 0.9rem; transition: 0.2s; font-weight: 500; }
+        .user-dropdown-body a i { margin-right: 12px; font-size: 1.1rem; color: #0ea5a4; }
+        .user-dropdown-body a:hover { background: #f1f5f9; color: #0ea5a4; }
+        .dropdown-divider { height: 1px; background: var(--border); margin: 5px 0; }
+        .text-orange { color: #ff9800 !important; }
+        .text-orange i { color: #ff9800 !important; }
+        .user-dropdown-footer { display: flex; align-items: center; padding: 12px 20px; background: #fffcfc; color: #dc3545; font-weight: 600; text-decoration: none; font-size: 0.9rem; transition: 0.2s; border-top: 1px solid var(--border); }
+        .user-dropdown-footer i { margin-right: 12px; font-size: 1.1rem; }
+        .user-dropdown-footer:hover { background: #fdf0f1; }
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<header class="user-navbar">
+    <div class="navbar-brand-name">Shop<span>Điện Tử</span></div>
+    <nav class="navbar-nav-links">
+        <a href="/" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">Trang chủ</a>
+        <a href="/Product" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Product" ? "active" : "")">Sản phẩm</a>
+        <a href="/Order/MyOrders" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Order" ? "active" : "")">Đơn hàng của tôi</a>
+    </nav>
+    <div class="navbar-actions">
+        <a href="/Cart" title="Giỏ hàng">
+            <i class="bi bi-cart3"></i>
+            <span class="cart-badge" id="cartCount">0</span>
+        </a>
+
+        @if (Context.Session.GetString("Email") != null)
+        {
+            <div class="user-dropdown-container">
+                <div class="user-avatar-btn">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="user-dropdown-menu">
+                    <div class="user-dropdown-header">
+                        <div class="user-name">@(Context.Session.GetString("FullName") ?? Context.Session.GetString("Email"))</div>
+                        <div class="user-email">@Context.Session.GetString("Email")</div>
+                    </div>
+                    <div class="user-dropdown-body">
+                        <a href="/Profile"><i class="bi bi-person-circle"></i> Hồ sơ cá nhân</a>
+                        <a href="/Order/MyOrders"><i class="bi bi-box-seam"></i> Đơn hàng của tôi</a>
+                        @if (Context.Session.GetInt32("Role") == 1 || Context.Session.GetInt32("Role") == 3)
+                        {
+                            <div class="dropdown-divider"></div>
+                            <a href="/admin/homeadmin" class="text-orange"><i class="bi bi-shield-lock-fill"></i> Quản Trị Hệ Thống</a>
+                        }
+                    </div>
+                    <a href="/Access/Logout" class="user-dropdown-footer">
+                        <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <a href="/Access/Login" class="btn-nav-fill"><i class="bi bi-person"></i> Đăng nhập</a>
+            <a href="/Access/Register" class="btn-nav-outline">Đăng ký</a>
+        }
+    </div>
+</header>
+
+<!-- ===== PAGE WRAPPER ===== -->
+<div class="page-wrapper">
+
+    <!-- ===== SIDEBAR ===== -->
+    @if (ViewData["HideSidebar"] as string != "true")
+    {
+        <aside class="user-sidebar">
+        <div class="sidebar-group-label">Danh mục</div>
+        <div class="sidebar-section-title">Hệ Sinh Thái Công Nghệ</div>
+
+        @{
+            var cats = ViewBag.SidebarCategories as List<ShopDienTu.MoDels.Category> ?? new List<ShopDienTu.MoDels.Category>();
+        }
+        @foreach (var cat in cats)
+        {
+            string icon = string.IsNullOrWhiteSpace(cat.Icon) ? "bi-grid" : cat.Icon;
+            string catController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+            string catAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+            string catIdStr = Context.Request.Query["categoryId"].ToString();
+            bool isActive = catController == "Home" && catAction == "SanPhamTheoLoai" && catIdStr == cat.CategoryId.ToString();
+
+            <a href="/Home/SanPhamTheoLoai?categoryId=@cat.CategoryId" class="sidebar-nav-item @(isActive ? "active" : "")">
+                <i class="bi @icon"></i>
+                @cat.CategoryName.ToUpper()
+            </a>
+        }
+        </aside>
+    }
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="user-main">
+        @RenderBody()
+    </main>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="user-footer">
+    <div class="container-fluid">
+        <div class="row g-4" style="max-width: 1200px; margin: 0 auto;">
+            <div class="col-md-3">
+                <div class="footer-brand">Shop<span>Điện Tử</span></div>
+                <div class="footer-desc">Shop Điện Tử hàng đầu Việt Nam. Cung cấp giải pháp công nghệ hiện đại, chính hãng với dịch vụ hậu mãi số 1.</div>
+                <div class="footer-social-links">
+                    <a href="#"><i class="bi bi-facebook"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+            <div class="col-md-2 offset-md-1">
+                <div class="footer-heading">Liên kết nhanh</div>
+                <div class="footer-links">
+                    <a href="#">Về chúng tôi</a>
+                    <a href="#">Chính sách bảo hành</a>
+                    <a href="#">Tin tức công nghệ</a>
+                    <a href="#">Tuyển dụng</a>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="footer-heading">Hỗ trợ</div>
+                <div class="footer-links">
+                    <a href="#">Hướng dẫn mua hàng</a>
+                    <a href="#">Thanh toán & Trả góp</a>
+                    <a href="#">Giao hàng & Lắp đặt</a>
+                    <a href="#">Câu hỏi thường gặp</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="footer-heading">Liên hệ</div>
+                <div class="footer-contact-item"><i class="bi bi-geo-alt-fill"></i><span>9 Trần Bích San, TP. Đà Nẵng</span></div>
+                <div class="footer-contact-item"><i class="bi bi-telephone-fill"></i><span>1800 8888 (Miễn phí)</span></div>
+                <div class="footer-contact-item"><i class="bi bi-envelope-fill"></i><span>support@shopdientu.vn</span></div>
+            </div>
+        </div>
+        <div class="footer-bottom" style="max-width: 1200px; margin: 0 auto;">
+            <span>© 2024 ShopDienTu · Shop Điện Tử. All rights reserved.</span>
+            <div class="footer-bottom-links">
+                <a href="#">Chính sách bảo mật</a>
+                <a href="#">Điều khoản dịch vụ</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Load cart count
+    async function loadCartCount() {
+        try {
+            const r = await fetch('/Cart/GetCount');
+            const qty = await r.json();
+            const el = document.getElementById('cartCount');
+            if (el) el.textContent = qty || 0;
+        } catch {}
+    }
+    loadCartCount();
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

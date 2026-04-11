@@ -1,0 +1,48 @@
+@model List<ShopDienTu.MoDels.Product>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewBag.Title = "Tất cả sản phẩm";
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+}
+
+<div class="mb-4 d-flex justify-content-between align-items-end">
+    <div>
+        <h3 class="fw-bold m-0" style="color: var(--text-main);">TẤT CẢ SẢN PHẨM</h3>
+        <p class="text-muted m-0" style="font-size: 0.9rem;">Khám phá bộ sưu tập công nghệ mới nhất của chúng tôi.</p>
+    </div>
+</div>
+
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+    @foreach (var item in Model)
+    {
+        <div class="col">
+            @await Html.PartialAsync("PartialSanPham", item)
+        </div>
+    }
+</div>
+
+@if (ViewBag.TotalPages > 1)
+{
+    <nav class="mt-5 d-flex justify-content-center">
+        <ul class="pagination pagination-sm m-0 shadow-sm" style="border-radius: 8px; overflow:hidden;">
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link text-secondary fw-semibold border-0" asp-controller="Product" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)">&laquo; Trang trước</a>
+                </li>
+            }
+            @for (int p = 1; p <= ViewBag.TotalPages; p++)
+            {
+                <li class="page-item @(p == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link @(p == ViewBag.CurrentPage ? "bg-dark text-white" : "text-secondary") fw-semibold border-0" asp-controller="Product" asp-action="Index" asp-route-page="@p">@p</a>
+                </li>
+            }
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link text-secondary fw-semibold border-0" asp-controller="Product" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)">Trang sau &raquo;</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

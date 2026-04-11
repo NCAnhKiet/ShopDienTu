@@ -1,0 +1,250 @@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model ShopDienTu.MoDels.Product
+
+@{
+    ViewData["Title"] = "ThemSanPhamMoi";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    /* Tiêu đề chính */
+    h1 {
+        font-weight: 700;
+        color: #0ea5a4;
+        margin-bottom: 20px;
+    }
+
+    h4 {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    /* Khung form */
+    .form-container {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    /* Nhãn */
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    /* Input */
+    .form-control {
+        border-radius: 8px;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        transition: 0.2s;
+    }
+
+        .form-control:focus {
+            border-color: #0ea5a4;
+            box-shadow: 0 0 0 3px rgba(14,165,164,0.25);
+        }
+
+    /* Nút */
+    .btn-primary {
+        background: #0ea5a4 !important;
+        border: none !important;
+        padding: 10px 20px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: 0.2s;
+    }
+
+        .btn-primary:hover {
+            background: #0c8d8c !important;
+            transform: translateY(-1px);
+        }
+
+    /* Link quay về */
+    a {
+        color: #0ea5a4;
+        font-weight: 500;
+    }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    /* Căn khoảng cách giữa các input */
+    .form-group {
+        margin-bottom: 15px;
+    }
+</style>
+
+<h1>Thêm Sản Phẩm Mới</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" asp-action="ThemSanPhamMoi" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ProductName" class="control-label"></label>
+                <input asp-for="ProductName" class="form-control" />
+                <span asp-validation-for="ProductName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Color" class="control-label"></label>
+                <input asp-for="Color" class="form-control" />
+                <span asp-validation-for="Color" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Size" class="control-label"></label>
+                <input asp-for="Size" class="form-control" />
+                <span asp-validation-for="Size" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Tải lên hình ảnh (từ thiết bị)</label>
+                <input type="file" name="ImageUpload" class="form-control" accept="image/*" />
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="CategoryId" class="control-label fw-bold">Danh mục sản phẩm</label>
+                <div class="d-flex align-items-stretch gap-2">
+                    <select asp-for="CategoryId" class="form-control m-0 flex-grow-1" asp-items="ViewBag.CategoryId" id="CategoryId"></select>
+                    <button type="button" class="btn text-white px-3" style="background:#0ea5a4; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#addCategoryModal" title="Thêm danh mục">
+                        <i class="mdi mdi-plus" style="font-size: 1.2rem; line-height: 1;"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger px-3" id="btnDeleteCategory" style="border-radius: 6px;" title="Xóa danh mục này">
+                        <i class="mdi mdi-delete" style="font-size: 1.2rem; line-height: 1;"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-4">
+                <input type="submit" value="Tạo mới Sản phẩm" class="btn btn-primary w-100 py-3 text-uppercase" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="DanhMucSanPham" style="text-decoration:none;"><i class="bi bi-arrow-left"></i> Quay lại danh sách</a>
+</div>
+
+
+<!-- Modal Add Category -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" style="color: #0ea5a4;">THÊM DANH MỤC MỚI</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Tên danh mục <span class="text-danger">*</span></label>
+            <input type="text" id="newCategoryName" class="form-control" placeholder="Nhập tên danh mục (Laptop, Phụ kiện...)" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Bootstrap Icon Class (Tùy chọn)</label>
+            <input type="text" id="newCategoryIcon" class="form-control" placeholder="Ví dụ: bi-laptop, bi-mouse, bi-phone..." />
+            <small class="text-muted"><i class="bi bi-info-circle me-1"></i> <a href="https://icons.getbootstrap.com/" target="_blank">Xem danh sách Icon tại đây</a></small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary" id="saveCategoryBtn">Lưu danh mục</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('saveCategoryBtn').addEventListener('click', async function() {
+        const name = document.getElementById('newCategoryName').value.trim();
+        const icon = document.getElementById('newCategoryIcon').value.trim();
+        if(!name) { alert('Vui lòng nhập tên danh mục!'); return; }
+        
+        try {
+            const response = await fetch('/admin/homeadmin/ThemCategoryAjax', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ CategoryName: name, Icon: icon })
+            });
+
+            if (response.ok) {
+                 const data = await response.json();
+                 if(data.success) {
+                     // Append to select
+                     const select = document.getElementById('CategoryId');
+                     const option = document.createElement('option');
+                     option.value = data.categoryId;
+                     option.text = data.categoryName;
+                     select.add(option);
+                     select.value = data.categoryId; // auto select
+                    
+                     // Hide modal properly (bootstrap 5)
+                     const modalEl = document.getElementById('addCategoryModal');
+                     var modalInstance = bootstrap.Modal.getInstance(modalEl);
+                     if(modalInstance) modalInstance.hide();
+                    
+                     // clear form
+                     document.getElementById('newCategoryName').value = '';
+                     document.getElementById('newCategoryIcon').value = '';
+                     alert('Đã thêm danh mục thành công!');
+                 }
+            } else {
+                 alert('Đã xảy ra lỗi từ server, không thể thêm danh mục');
+            }
+        } catch(err) {
+            console.error(err);
+            alert('Lỗi kết nối khi thêm danh mục');
+        }
+    });
+
+    // Delete category
+    document.getElementById('btnDeleteCategory').addEventListener('click', async function() {
+        const select = document.getElementById('CategoryId');
+        const id = select.value;
+        const name = select.options[select.selectedIndex]?.text;
+        if(!id) { alert('Vui lòng chọn danh mục để xóa!'); return; }
+        
+        if(!confirm('Bạn có chắc chắn muốn xóa danh mục: "' + name + '" không?')) return;
+
+        try {
+            const formData = new FormData();
+            formData.append('id', id);
+
+            const response = await fetch('/admin/homeadmin/XoaCategoryAjax', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                 const data = await response.json();
+                 if(data.success) {
+                     select.remove(select.selectedIndex);
+                     alert('Xóa danh mục thành công!');
+                 } else {
+                     alert(data.message || 'Không thể xóa danh mục!');
+                 }
+            } else {
+                 alert('Đã xảy ra lỗi hệ thống khi xóa.');
+            }
+        } catch(err) {
+            console.error(err);
+            alert('Lỗi kết nối khi xóa danh mục');
+        }
+    });
+});
+</script>
+

@@ -1,0 +1,78 @@
+@model List<ShopDienTu.MoDels.Customer>
+
+@{
+    ViewData["Title"] = "Quản lý Nhân sự";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<div class="row mb-4">
+    <div class="col-6">
+        <h3 class="font-weight-bold">Quản lý Nhân sự</h3>
+    </div>
+    <div class="col-6 text-end text-right">
+        <a asp-action="CreateStaff" class="btn btn-gradient-primary btn-sm px-4 py-2">+ Thêm nhân sự</a>
+    </div>
+</div>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-warning">@TempData["Message"]</div>
+}
+
+<div class="card" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Họ tên</th>
+                    <th>Chức vụ</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td>#@c.CustomerId</td>
+                        <td>@c.Email</td>
+                        <td>@c.FullName</td>
+                        <td>
+                            @if (c.Role == 1) { <span class="badge badge-danger">Quản trị viên (Admin)</span> }
+                            else { <span class="badge badge-info">Nhân viên</span> }
+                        </td>
+                        <td>
+                            <form asp-action="DeleteStaff" method="post" onsubmit="return confirm('Xóa tài khoản này ra khỏi hệ thống vĩnh viễn?')" style="display:inline;">
+                                <input type="hidden" name="id" value="@c.CustomerId" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+         <!-- Pagination -->
+         <div class="mt-4 d-flex justify-content-center">
+             <ul class="pagination">
+                 @if (ViewBag.CurrentPage > 1)
+                 {
+                     <li class="page-item"><a class="page-link" asp-action="Staffs" asp-route-page="@(ViewBag.CurrentPage - 1)">Previous</a></li>
+                 }
+                 @for (int p = 1; p <= ViewBag.TotalPages; p++)
+                 {
+                     <li class="page-item @(p == ViewBag.CurrentPage ? "active" : "")">
+                         <a class="page-link" asp-action="Staffs" asp-route-page="@p">@p</a>
+                     </li>
+                 }
+                 @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                 {
+                     <li class="page-item"><a class="page-link" asp-action="Staffs" asp-route-page="@(ViewBag.CurrentPage + 1)">Next</a></li>
+                 }
+             </ul>
+         </div>
+
+    </div>
+</div>

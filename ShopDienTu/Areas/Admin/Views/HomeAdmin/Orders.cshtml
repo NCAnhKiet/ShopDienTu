@@ -1,0 +1,467 @@
+@model List<ShopDienTu.Models.Order>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<style>
+    /* Tổng thể để tông màu sáng hiện đại */
+    .order-page-wrapper {
+        font-family: 'Inter', sans-serif;
+        color: #334155;
+    }
+
+    .text-muted-custom {
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .btn-create-new {
+        background-color: #6366f1;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 0.6rem 1.2rem;
+        border: none;
+        transition: 0.2s;
+    }
+    .btn-create-new:hover {
+        background-color: #4f46e5;
+        color: #fff;
+    }
+    .btn-filter {
+        background-color: #f1f5f9;
+        color: #334155;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 0.6rem 1.2rem;
+        border: 1px solid #e2e8f0;
+        transition: 0.2s;
+    }
+    .btn-filter:hover { background-color: #e2e8f0; }
+
+    /* Các thẻ thống kê (Cards) */
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border-top: 4px solid #e2e8f0;
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-card.blue-top { border-top-color: #3b82f6; }
+    .stat-card.red-top { border-top-color: #ef4444; }
+    .stat-card.teal-top { border-top-color: #14b8a6; }
+    
+    .stat-icon-bg {
+        position: absolute;
+        right: -10px;
+        bottom: -15px;
+        font-size: 6rem;
+        opacity: 0.03;
+        color: #0f172a;
+    }
+
+    .stat-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+    .stat-extra {
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .text-success-custom { color: #10b981; }
+    .text-danger-custom { color: #ef4444; }
+    
+    /* Bảng dữ liệu */
+    .table-container {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        margin-top: 1.5rem;
+    }
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .modern-table th {
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #64748b;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .modern-table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+    }
+    .modern-table tr:hover td {
+        background-color: #f8fafc;
+    }
+    .modern-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Các thành phần nhỏ trong bảng */
+    .order-id {
+        font-weight: 800;
+        color: #3b82f6;
+        font-size: 0.9rem;
+    }
+
+    .avatar-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #e2e8f0;
+        color: #475569;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        margin-right: 10px;
+    }
+
+    .info-line {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-bottom: 0.2rem;
+    }
+    .info-line i {
+        font-size: 0.9rem;
+        margin-right: 4px;
+        color: #94a3b8;
+    }
+
+    .prod-list {
+        font-size: 0.85rem;
+        color: #334155;
+        font-weight: 600;
+    }
+    .prod-more {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+
+    .total-price {
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .date-text {
+        font-size: 0.85rem;
+        color: #475569;
+    }
+
+    /* Dropdown Trạng thái */
+    .status-select {
+        border-radius: 20px;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23475569%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.7rem top 50%;
+        background-size: 0.65rem auto;
+        padding-right: 1.8rem;
+    }
+    
+    .status-select.Đã.đặt { background-color: #f1f5f9; color: #475569; border-color:#e2e8f0; }
+    .status-select.Đang.xử.lý { background-color: #fffbeb; color: #d97706; border-color:#fde68a; }
+    .status-select.Đang.giao { background-color: #eff6ff; color: #2563eb; border-color:#bfdbfe; }
+    .status-select.Hoàn.thành { background-color: #ecfdf5; color: #059669; border-color:#a7f3d0; }
+    .status-select.Đã.hủy { background-color: #fef2f2; color: #dc2626; border-color:#fecaca; }
+
+    /* Actions */
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: none;
+        background-color: #fef2f2;
+        color: #ef4444;
+        transition: 0.2s;
+    }
+    .btn-cancel:hover { background-color: #fee2e2; color: #dc2626; }
+
+    /* Phân trang */
+    .table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 1rem;
+    }
+    .showing-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+    .modern-pagination {
+        display: flex;
+        gap: 0.3rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .modern-pagination .page-link {
+        border-radius: 6px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #64748b;
+        border: 1px solid transparent;
+        background: transparent;
+        transition: 0.2s;
+    }
+    .modern-pagination .page-link:hover {
+        background-color: #f1f5f9;
+        color: #334155;
+    }
+    .modern-pagination .active .page-link {
+        background-color: #6366f1;
+        color: white;
+        border-color: #6366f1;
+    }
+</style>
+
+<div class="order-page-wrapper">
+    
+    <!-- Tiêu đề và nút -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="page-title mb-1">Quản Lý Đơn Hàng</h2>
+            <div class="text-muted-custom">Theo dõi và vận hành hệ thống đơn hàng Shop Điện Tử.</div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-filter"><i class="mdi mdi-filter-variant"></i> Bộ lọc</button>
+            <button class="btn btn-create-new"><i class="mdi mdi-plus fw-bold"></i> Tạo mới</button>
+        </div>
+    </div>
+
+    <!-- Top 3 Cards -->
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="stat-card blue-top">
+                <i class="mdi mdi-format-list-bulleted stat-icon-bg"></i>
+                <div class="stat-title">TỔNG ĐƠN HÀNG</div>
+                <div class="stat-value">
+                    @String.Format("{0:N0}", ViewBag.TotalOrdersCount)
+                    <span class="stat-extra text-success-custom ms-1">+12% <i class="mdi mdi-trending-up"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card red-top">
+                <i class="mdi mdi-clipboard-text-outline stat-icon-bg"></i>
+                <div class="stat-title">ĐƠN CHỜ XỬ LÝ</div>
+                <div class="stat-value text-danger-custom">
+                    @ViewBag.PendingOrders
+                    <span class="stat-extra text-danger-custom ms-1" style="font-size:0.8rem">-4% <i class="mdi mdi-trending-down"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card teal-top">
+                <i class="mdi mdi-truck-fast stat-icon-bg"></i>
+                <div class="stat-title">TỈ LỆ GIAO THÀNH CÔNG</div>
+                <div class="stat-value">
+                    @ViewBag.SuccessRate%
+                    <span class="stat-extra text-success-custom ms-1" style="font-size:0.8rem">+0.5% <i class="mdi mdi-trending-up"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng Dữ Liệu -->
+    <div class="table-container">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>MÃ ĐƠN (#ID)</th>
+                    <th>KHÁCH HÀNG</th>
+                    <th>THÔNG TIN NHẬN</th>
+                    <th>SẢN PHẨM</th>
+                    <th>TỔNG TIỀN</th>
+                    <th>NGÀY ĐẶT</th>
+                    <th>TRẠNG THÁI</th>
+                    <th class="text-center">HÀNH ĐỘNG</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var o in Model)
+                {
+                    <tr>
+                        <!-- MÃ ĐƠN -->
+                        <td>
+                            <div class="order-id">#ORD-@o.OrderId</div>
+                        </td>
+
+                        <!-- KHÁCH HÀNG -->
+                        <td>
+                            <div class="d-flex align-items-center">
+                                @{
+                                    string fullName = o.Customer?.FullName ?? "Khác";
+                                    var initial = string.Join("", fullName.Split(' ').Where(s => s.Length > 0).Select(s => s[0]).Take(2)).ToUpper();
+                                }
+                                <div class="avatar-circle">@initial</div>
+                                <div class="font-weight-bold" style="font-size:0.9rem">@fullName</div>
+                            </div>
+                        </td>
+
+                        <!-- THÔNG TIN NHẬN -->
+                        <td>
+                            <div class="info-line">
+                                <i class="mdi mdi-phone"></i> @o.Phone
+                            </div>
+                            <div class="info-line">
+                                <i class="mdi mdi-map-marker"></i> @o.Address
+                            </div>
+                        </td>
+
+                        <!-- SẢN PHẨM -->
+                        <td>
+                            @{
+                                var firstProduct = o.OrderDetails?.FirstOrDefault();
+                                int othersCount = (o.OrderDetails?.Sum(x=>x.Quantity) ?? 0) - 1;
+                            }
+                            @if(firstProduct != null)
+                            {
+                                <div class="prod-list">1x @firstProduct.Product.ProductName</div>
+                                @if (othersCount > 0)
+                                {
+                                    <div class="prod-more">+ @othersCount phụ kiện khác</div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Không có SP</span>
+                            }
+                        </td>
+
+                        <!-- TỔNG TIỀN -->
+                        <td class="total-price">
+                            @String.Format("{0:N0}đ", o.TotalPrice)
+                        </td>
+
+                        <!-- NGÀY ĐẶT -->
+                        <td class="date-text">
+                            @o.OrderDate.ToString("dd/MM/yyyy")
+                        </td>
+
+                        <!-- TRẠNG THÁI (Select Dropdown Style) -->
+                        <td>
+                            <form asp-area="admin" asp-controller="HomeAdmin" asp-action="ChangeStatus" method="post" style="margin: 0;">
+                                <input type="hidden" name="orderId" value="@o.OrderId" />
+                                <select name="status" class="status-select @o.Status.Replace(" ", ".")" onchange="this.form.submit()">
+                                    @if (o.Status == "Đã đặt")
+                                    {
+                                        <option value="Đã đặt" selected>ĐÃ ĐẶT</option>
+                                        <option value="Đang xử lý">ĐANG XỬ LÝ</option>
+                                        <option value="Đã hủy">HỦY ĐƠN</option>
+                                    }
+                                    else if (o.Status == "Đang xử lý")
+                                    {
+                                        <option value="Đang xử lý" selected>ĐANG XỬ LÝ</option>
+                                        <option value="Đang giao">ĐANG GIAO</option>
+                                        <option value="Đã hủy">HỦY ĐƠN</option>
+                                    }
+                                    else if (o.Status == "Đang giao")
+                                    {
+                                        <option value="Đang giao" selected>ĐANG GIAO</option>
+                                        <option value="Hoàn thành">HOÀN THÀNH</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@o.Status" selected>@o.Status.ToUpper()</option>
+                                    }
+                                </select>
+                            </form>
+                        </td>
+
+                        <!-- HÀNH ĐỘNG -->
+                        <td class="text-center">
+                            @if (o.Status == "Đã đặt" || o.Status == "Đang xử lý")
+                            {
+                                <form asp-area="admin" asp-controller="HomeAdmin" asp-action="CancelOrder" method="post" onsubmit="return confirm('Bạn có chắc muốn hủy đơn này?')" style="margin: 0;">
+                                    <input type="hidden" name="orderId" value="@o.OrderId" />
+                                    <button class="btn-cancel" title="Hủy đơn"><i class="mdi mdi-close"></i></button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="text-muted"><i class="mdi mdi-minus"></i></span>
+                            }
+                        </td>
+                    </tr>
+                }
+                
+                @if(!Model.Any()) {
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">Chưa có đơn hàng nào.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Footer Phân Trang -->
+        <div class="table-footer">
+            <div class="showing-text">
+                Hiển thị trang @ViewBag.CurrentPage trên @ViewBag.TotalPages trang
+            </div>
+            
+            <ul class="modern-pagination">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li><a class="page-link" asp-action="Orders" asp-route-page="@(ViewBag.CurrentPage - 1)">&lt;</a></li>
+                }
+                
+                @for (int p = 1; p <= ViewBag.TotalPages; p++)
+                {
+                    <li class="@(p == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Orders" asp-route-page="@p">@p</a>
+                    </li>
+                }
+                
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <li><a class="page-link" asp-action="Orders" asp-route-page="@(ViewBag.CurrentPage + 1)">&gt;</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+@model ShopDienTu.MoDels.Customer
+
+@{
+    ViewData["Title"] = "Cập Nhật Khách Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<style>
+    h2 { font-weight: 800; color: #0f172a; margin-bottom: 20px; }
+    .form-container { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .form-group label { font-weight: 600; margin-bottom: 5px; color: #334155; }
+    .form-control { border-radius: 8px; border: 1px solid #e2e8f0; padding: 10px 12px; }
+    .form-control:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.2); }
+    .btn-create-new { background-color: #6366f1; color: #fff; font-weight: 600; border-radius: 8px; padding: 10px 24px; border: none; }
+    .btn-create-new:hover { background-color: #4f46e5; color: #fff; }
+</style>
+
+<div class="customer-page-wrapper">
+    <div class="mb-4">
+        <a asp-action="Customers" class="text-decoration-none" style="color:#6366f1; font-weight:600;"><i class="mdi mdi-arrow-left"></i> Quay lại danh sách</a>
+    </div>
+
+    <h2>Chỉnh Sửa Thông Tin Khách Hàng</h2>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="form-container">
+                <form method="post" asp-action="EditCustomer">
+                    <input type="hidden" asp-for="CustomerId" />
+
+                    <div class="form-group mb-3">
+                        <label>Email đăng nhập (Không thể sửa)</label>
+                        <input value="@Model.Email" class="form-control" disabled style="background-color:#f8fafc;" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="FullName">Họ và tên</label>
+                        <input asp-for="FullName" class="form-control" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Mật khẩu mới</label>
+                        <input name="Password" type="password" class="form-control" placeholder="Bỏ trống nếu không thay đổi mật khẩu" />
+                        <small class="text-muted">Nhập mật khẩu vào ô này nếu bạn muốn đổi mật khẩu mới cho người dùng.</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Phone">Số điện thoại</label>
+                        <input asp-for="Phone" class="form-control" />
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="Address">Địa chỉ giao hàng</label>
+                        <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-create-new w-100">LƯU THAY ĐỔI</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-7 d-none d-md-flex align-items-center justify-content-center">
+            <div class="text-center" style="opacity: 0.2;">
+                <i class="mdi mdi-account-edit" style="font-size:12rem; color:#64748b;"></i>
+                <h4 style="color:#64748b; font-weight:800;">Quản Lý Dữ Liệu Khách Của Hàng</h4>
+            </div>
+        </div>
+    </div>
+</div>

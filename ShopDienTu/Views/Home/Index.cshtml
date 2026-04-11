@@ -1,0 +1,46 @@
+@using ShopDienTu.MoDels;
+@model List<Product>
+@{
+    ViewData["Title"] = "ShopDienTu - Trang Chủ";
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+}
+
+<!-- Hero Banner -->
+<div class="mb-5 position-relative overflow-hidden shadow-sm" style="background: linear-gradient(135deg, #0ea5a4 0%, #0c8d8c 100%); border-radius: 12px; padding: 2.5rem 2rem;">
+    <div style="position: relative; z-index:2; max-width:520px;">
+        <div class="d-inline-block bg-white fw-bold mb-3 px-3 py-1" style="color: #0ea5a4; font-size: 0.75rem; border-radius: 4px; letter-spacing: 1px;">
+            ⚡ PHIÊN BẢN GIỚI HẠN
+        </div>
+        <h1 class="fw-black text-white mb-3" style="font-size: 2.5rem; line-height: 1.1;">
+            DEAL <span style="color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.4);">CỰC CHẤT</span><br>
+            SALE <span style="color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.4);">CỰC CHÁY</span>
+        </h1>
+        <p class="text-white mb-4" style="opacity: 0.9; font-size: 0.95rem;">
+            Trải nghiệm hệ sinh thái công nghệ đỉnh cao với ưu đãi hấp dẫn chưa từng có.
+        </p>
+        <a href="/Product" class="btn bg-white shadow-sm fw-bold px-4 py-2" style="color: #0ea5a4; border-radius: 8px;">
+            <i class="bi bi-lightning-fill"></i> SĂN DEAL NGAY
+        </a>
+    </div>
+    <div style="position:absolute; right:2rem; top:50%; transform:translateY(-50%); opacity:0.1; font-size:15rem; line-height:1; color: white;">
+        <i class="bi bi-laptop"></i>
+    </div>
+</div>
+
+<!-- Sản phẩm nổi bật -->
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <div class="fw-bold text-muted mb-1" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">Tuyển chọn đặc biệt</div>
+        <h3 class="fw-bold m-0" style="color: var(--text-main);">SẢN PHẨM NỔI BẬT</h3>
+    </div>
+    <a href="/Product" class="text-decoration-none fw-semibold" style="color: var(--accent); font-size: 0.9rem;">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+</div>
+
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+    @foreach (var p in Model)
+    {
+        <div class="col">
+            @await Html.PartialAsync("PartialSanPham", p)
+        </div>
+    }
+</div>
