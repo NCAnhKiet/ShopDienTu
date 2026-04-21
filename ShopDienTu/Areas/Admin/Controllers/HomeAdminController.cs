@@ -109,9 +109,15 @@ namespace ShopDienTu.Areas.Admin.Controllers
             var stockValue = db.Products.Sum(p => (decimal?)p.Price) ?? 0;
 
             ViewBag.ActiveCategories = activeCategories;
-            ViewBag.LowStockAlerts = 8; // Mock value as per discussion
+            // Do Entity Product hiện tại chưa có trường Số Lượng (Stock/Quantity), 
+            // tạm thời gán bằng 0 hoặc bạn có thể thay đổi bằng logic khác phù hợp
+            ViewBag.LowStockAlerts = 0;
             ViewBag.StockValue = stockValue;
-            ViewBag.TotalItemsCount = totalItems; // avoid conflict with ViewBag.TotalItems from pagination? wait I'll use TotalItemsCount.
+            ViewBag.TotalItemsCount = totalItems;
+            
+            // Do Product chưa lưu ngày tạo (CreatedAt), 
+            // tạm thời mock tỉ lệ tăng trưởng để giao diện nhận dữ liệu động
+            ViewBag.ProductGrowth = "+12%"; 
 
             var lstSanPham = db.Products.OrderByDescending(x => x.ProductId)
                                         .Skip((page - 1) * pageSize)

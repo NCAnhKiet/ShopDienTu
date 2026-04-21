@@ -289,7 +289,10 @@
                 <div class="stat-title">TỔNG SẢN PHẨM</div>
                 <div class="stat-value">
                     @String.Format("{0:N0}", ViewBag.TotalItemsCount)
-                    <span class="stat-extra text-success-custom ms-1">+12%</span>
+                    @if (!string.IsNullOrEmpty(ViewBag.ProductGrowth))
+                    {
+                        <span class="stat-extra text-success-custom ms-1">@ViewBag.ProductGrowth</span>
+                    }
                 </div>
             </div>
         </div>
@@ -304,7 +307,7 @@
         <div class="col-md-3">
             <div class="stat-card red-top">
                 <div class="stat-title">SẮP HẾT HÀNG</div>
-                <div class="stat-value text-danger-custom">08</div>
+                <div class="stat-value text-danger-custom">@ViewBag.LowStockAlerts</div>
             </div>
         </div>
         <div class="col-md-3">
