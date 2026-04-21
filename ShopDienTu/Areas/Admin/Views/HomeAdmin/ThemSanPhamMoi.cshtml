@@ -77,59 +77,88 @@
     }
 </style>
 
-<h1>Thêm Sản Phẩm Mới</h1>
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold" style="color: #0ea5a4; letter-spacing: -0.5px;">Thêm Mới Sản Phẩm</h2>
+            <p class="text-muted">Nhập thông tin chi tiết để thêm sản phẩm mới vào hệ thống</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8 col-xl-7 mx-auto">
+            <div class="form-container">
+                <form method="post" asp-action="ThemSanPhamMoi" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="control-label fw-bold mb-2">Tên sản phẩm <span class="text-danger">*</span></label>
+                            <input asp-for="ProductName" class="form-control" placeholder="Ví dụ: iPhone 15 Pro Max 256GB" />
+                            <span asp-validation-for="ProductName" class="text-danger small"></span>
+                        </div>
+                    </div>
 
-<h4>Product</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post" asp-action="ThemSanPhamMoi" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ProductName" class="control-label"></label>
-                <input asp-for="ProductName" class="form-control" />
-                <span asp-validation-for="ProductName" class="text-danger"></span>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="control-label fw-bold mb-2">Giá bán (VNĐ) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="Price" type="number" class="form-control" placeholder="Ví dụ: 30000000" />
+                                <span class="input-group-text fw-bold text-muted">₫</span>
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="control-label fw-bold mb-2">Danh mục sản phẩm <span class="text-danger">*</span></label>
+                            <div class="d-flex align-items-stretch gap-2">
+                                <select asp-for="CategoryId" class="form-select m-0 flex-grow-1" asp-items="ViewBag.CategoryId" id="CategoryId"></select>
+                                <button type="button" class="btn text-white px-3" style="background:#0ea5a4; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#addCategoryModal" title="Thêm danh mục mới">
+                                    <i class="mdi mdi-plus" style="font-size: 1.2rem; line-height: 1;"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger px-3" id="btnDeleteCategory" style="border-radius: 6px;" title="Xóa danh mục đang chọn">
+                                    <i class="mdi mdi-delete" style="font-size: 1.2rem; line-height: 1;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="control-label fw-bold mb-2">Màu sắc</label>
+                            <input asp-for="Color" class="form-control" placeholder="Ví dụ: Titan Tự nhiên" />
+                            <span asp-validation-for="Color" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="control-label fw-bold mb-2">Kích thước / Phiên bản</label>
+                            <input asp-for="Size" class="form-control" placeholder="Ví dụ: 256GB / 15 inch" />
+                            <span asp-validation-for="Size" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="control-label fw-bold mb-2">Hình ảnh sản phẩm (Tải lên) <span class="text-danger">*</span></label>
+                        <div class="border rounded-3 p-3 bg-light text-center">
+                            <input type="file" name="ImageUpload" class="form-control mb-2" accept="image/*" />
+                            <small class="text-muted d-block"><i class="bi bi-info-circle me-1"></i>Vui lòng chọn hình ảnh định dạng JPG, PNG hoặc WEBP (Khuyến nghị 1:1)</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="control-label fw-bold mb-2">Mô tả sản phẩm</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Nhập giới thiệu chi tiết về sản phẩm này..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <hr class="mb-4" style="opacity: 0.1;" />
+                    
+                    <div class="d-flex gap-3">
+                        <a asp-action="DanhMucSanPham" class="btn btn-light fw-bold py-3 flex-grow-1 border">HỦY BỎ</a>
+                        <button type="submit" class="btn btn-primary py-3 flex-grow-1 text-uppercase fw-bold shadow-sm" style="background: linear-gradient(90deg, #0ea5a4, #0b8281);">
+                            <i class="mdi mdi-content-save me-1"></i> TẠO MỚI SẢN PHẨM
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Color" class="control-label"></label>
-                <input asp-for="Color" class="form-control" />
-                <span asp-validation-for="Color" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Size" class="control-label"></label>
-                <input asp-for="Size" class="form-control" />
-                <span asp-validation-for="Size" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label class="control-label">Tải lên hình ảnh (từ thiết bị)</label>
-                <input type="file" name="ImageUpload" class="form-control" accept="image/*" />
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="CategoryId" class="control-label fw-bold">Danh mục sản phẩm</label>
-                <div class="d-flex align-items-stretch gap-2">
-                    <select asp-for="CategoryId" class="form-control m-0 flex-grow-1" asp-items="ViewBag.CategoryId" id="CategoryId"></select>
-                    <button type="button" class="btn text-white px-3" style="background:#0ea5a4; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#addCategoryModal" title="Thêm danh mục">
-                        <i class="mdi mdi-plus" style="font-size: 1.2rem; line-height: 1;"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-danger px-3" id="btnDeleteCategory" style="border-radius: 6px;" title="Xóa danh mục này">
-                        <i class="mdi mdi-delete" style="font-size: 1.2rem; line-height: 1;"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group mt-4">
-                <input type="submit" value="Tạo mới Sản phẩm" class="btn btn-primary w-100 py-3 text-uppercase" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
