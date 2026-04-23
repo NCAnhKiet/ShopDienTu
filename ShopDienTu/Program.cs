@@ -10,6 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new() { Title = "Shop Điện Tử API", Version = "v1" });
+    c.DocInclusionPredicate((name, api) => 
+        api.ActionDescriptor.EndpointMetadata.Any(em => em is Microsoft.AspNetCore.Mvc.ApiControllerAttribute));
+});
+
 var connectionString = builder.Configuration.GetConnectionString("ShopDienTuContext");
 builder.Services.AddDbContext<ShopDienTuContext>(x => x.UseSqlServer(connectionString));
 
@@ -63,6 +71,11 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+else
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Shop Điện Tử API v1"));
 }
 
 app.UseHttpsRedirection();
